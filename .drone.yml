@@ -1,0 +1,37 @@
+pipeline:
+  build_image:
+    image: docker:17.07.0
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker build -t jenkins .
+
+  latest_to_quay:
+    image: docker:17.07.0
+    secrets: [docker_token]
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+jenkins" -p=$${DOCKER_TOKEN} quay.io
+      - docker tag jenkins quay.io/ukhomeofficedigital/jenkins:latest
+      - docker push quay.io/ukhomeofficedigital/jenkins:latest
+
+  deploy_ci:
+    image: quay.io/ukhomeofficedigital/kd:v0.3.1
+    secrets: [kube_token_acp_ci, kube_server_acp_ci]
+    commands:
+    - apk update
+    - apk add curl
+    - scripts/deploy.sh
+
+  tag_to_quay:
+    image: docker:17.07.0
+    secrets: [docker_token]
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+jenkins" -p=$${DOCKER_TOKEN} quay.io
+      - docker tag jenkins quay.io/ukhomeofficedigital/jenkins:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/jenkins:$${DRONE_TAG}
+    when:
+      event: tag
