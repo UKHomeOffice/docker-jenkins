@@ -1,0 +1,103 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: jenkins
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: jenkins
+        image: quay.io/ukhomeofficedigital/jenkins:{{.JENKINS_VERSION}}
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 8Gi
+            cpu: 2
+        env:
+        - name: KEYCLOAK_JSON
+          value: ''
+        - name: JAVA_OPTS
+          value: -Xms2g -Xmx6g
+        - name: DOCKER_HOST
+          value: tcp://127.0.0.1:2375
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: jenkins-home
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 2
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 120
+          timeoutSeconds: 2
+      - name: docker
+        image: "docker:17.07.0-dind"
+        securityContext:
+          privileged: true
+          capabilities:
+            drop:
+              - SYS_TIME
+              - SYS_RAWIO
+              - SYS_BOOT
+              - NET_RAW
+              - SYS_MODULE
+              - AUDIT_CONTROL
+              - AUDIT_WRITE
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: '500m'
+            memory: '500Mi'
+        command:
+          - "dockerd"
+        args:
+          - "-s"
+          - "overlay"
+          - "--host"
+          - "tcp://0.0.0.0:2375"
+          - "--userns-remap"
+          - "default"
+      - name: nginx
+        image: quay.io/ukhomeofficedigital/nginx-proxy:v3.2.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 10443
+        - containerPort: 10080
+        env:
+        - name: PROXY_SERVICE_HOST
+          value: 127.0.0.1
+        - name: PROXY_SERVICE_PORT
+          value: "8080"
+        - name: ENABLE_UUID_PARAM
+          value: "FALSE"
+        - name: NAXSI_USE_DEFAULT_RULES
+          value: "FALSE"
+        - name: ERROR_REDIRECT_CODES
+          value: "599"
+        - name: ADD_NGINX_SERVER_CFG
+          value: |
+            add_header Cache-Control private;
+            add_header X-Forwarded-Proto "https";
+      volumes:
+        - name: jenkins-home
+          {{- if .JENKINS_HOME_VOLUME_SIZE }}
+          persistentVolumeClaim:
+            claimName: jenkins-home
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
