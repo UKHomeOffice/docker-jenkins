@@ -25,7 +25,10 @@ spec:
             cpu: 2
         env:
         - name: KEYCLOAK_JSON
-          value: ''
+          valueFrom:
+            secretKeyRef:
+              name: jenkins
+              key: keycloak.json
         - name: JAVA_OPTS
           value: -Xms2g -Xmx6g
         - name: DOCKER_HOST
