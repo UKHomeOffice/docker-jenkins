@@ -5,7 +5,7 @@ The jenkins image includes default plugins, docker and sets up authentication vi
 
 To run jenkins:
 
-1. Create a repo called kube-<your project>-jenkins
+1. Create a repo called `kube-<your project>-jenkins`
 1. [Request](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/README.md) a namespace and a robot token for that namespace in the ACP-CI cluster.
 1. [Request](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/README.md) a keycloak client to be created in the hod-ci realm , the ACP team will create the kubernetes secret called jenkins, which will contain the keycloak json in the necessary namespace:
 `kubectl --context acp-ci -n <namespace> create secret generic jenkins --from-file=keycloak.json=/path/to/keycloak.json`
