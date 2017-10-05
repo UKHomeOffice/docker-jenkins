@@ -70,7 +70,7 @@ spec:
           - "dockerd"
         args:
           - "-s"
-          - "overlay"
+          - "overlay2"
           - "--host"
           - "tcp://0.0.0.0:2375"
           - "--userns-remap"
