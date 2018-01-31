@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: NetworkPolicy
 metadata:
   name: allow-internal-ingress
@@ -17,3 +17,6 @@ spec:
     ports:
     - protocol: TCP
       port: 443
+  policyTypes:
+  - Ingress  
+ 
