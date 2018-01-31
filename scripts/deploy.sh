@@ -28,10 +28,10 @@ else
      --timeout=5m \
      --namespace=${KUBE_NAMESPACE} \
      -f kube/pvc.yaml \
-     -f kube/ingress.yaml \
+     -f kube/deployment.yaml \
      -f kube/service.yaml \
      -f kube/networkpolicy.yaml \
-     -f kube/deployment.yaml
+     -f kube/ingress.yaml 
   if [[ $? -ne 0 ]]; then
     failed "rollout of deployment"
     exit 1

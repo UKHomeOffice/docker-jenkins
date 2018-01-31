@@ -16,14 +16,6 @@ pipeline:
       - docker tag jenkins quay.io/ukhomeofficedigital/jenkins:latest
       - docker push quay.io/ukhomeofficedigital/jenkins:latest
 
-  deploy_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.3.1
-    secrets: [kube_token_acp_ci, kube_server_acp_ci]
-    commands:
-    - apk update
-    - apk add curl
-    - scripts/deploy.sh
-
   tag_to_quay:
     image: docker:17.07.0
     secrets: [docker_token]
@@ -34,4 +26,12 @@ pipeline:
       - docker tag jenkins quay.io/ukhomeofficedigital/jenkins:$${DRONE_TAG}
       - docker push quay.io/ukhomeofficedigital/jenkins:$${DRONE_TAG}
     when:
-      event: tag
+      event: tag 
+
+  deploy_ci:
+    image: quay.io/ukhomeofficedigital/kd:v0.3.1
+    secrets: [kube_token_acp_ci, kube_server_acp_ci]
+    commands:
+    - apk update
+    - apk add curl
+    - scripts/deploy.sh
