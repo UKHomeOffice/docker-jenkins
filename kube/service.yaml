@@ -10,4 +10,4 @@ spec:
      port: 443
      targetPort: 10443
   selector:
-    name: jenkins
+    app: jenkins
