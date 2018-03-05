@@ -39,7 +39,7 @@ else
 
   info "checking the health endpoint for jenkins"
   if ! curl --silent --fail --retry 20 --retry-delay 20 --insecure \
-      https://jenkins.${DNS_DOMAIN}/ping; then
+      https://${DNS}}/; then
     failed "verification of health via endpoint"
     exit 1
   fi
