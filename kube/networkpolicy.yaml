@@ -5,7 +5,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: jenkins
+      name: jenkins
   ingress:
   - from:
     - namespaceSelector:
@@ -16,4 +16,4 @@ spec:
           name: ingress
     ports:
     - protocol: TCP
-      port: 443
+      port: 10443

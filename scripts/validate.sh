@@ -25,8 +25,10 @@ deploy_resources() {
     --timeout=5m \
     --check-interval=10s \
     -f kube/pvc.yaml \
-    -f kube/deployment.yaml \
-    -f kube/service.yaml; then
+    -f kube/ingress.yaml \
+    -f kube/service.yaml \
+    -f kube/networkpolicy.yaml \
+    -f kube/deployment.yaml; then
     return 1
   fi
 
