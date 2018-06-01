@@ -17,6 +17,7 @@ spec:
         name: jenkins
     spec:
       securityContext:
+        runAsNonRoot: true
         fsGroup: 1000
       containers:
       - name: jenkins
@@ -37,7 +38,7 @@ spec:
         - name: JAVA_OPTS
           value: -Xms2g -Xmx6g
         - name: DOCKER_HOST
-          value: tcp://127.0.0.1:2375
+          value: tcp://docker.{{.PROJECT}}-docker.svc.cluster.local:2375
         volumeMounts:
         - mountPath: /var/jenkins_home
           name: jenkins-home
@@ -51,41 +52,11 @@ spec:
             port: 8080
           initialDelaySeconds: 120
           timeoutSeconds: 2
-      - name: docker
-        image: "docker:17.07.0-dind"
-        securityContext:
-          privileged: true
-          capabilities:
-            drop:
-              - SYS_TIME
-              - SYS_RAWIO
-              - SYS_BOOT
-              - NET_RAW
-              - SYS_MODULE
-              - AUDIT_CONTROL
-              - AUDIT_WRITE
-        resources:
-          limits:
-            cpu: 2
-            memory: 4Gi
-          requests:
-            cpu: '500m'
-            memory: '500Mi'
-        command:
-          - "dockerd"
-        args:
-          - "-s"
-          - "overlay2"
-          - "--host"
-          - "tcp://0.0.0.0:2375"
-          - "--userns-remap"
-          - "default"
       - name: nginx
-        image: quay.io/ukhomeofficedigital/nginx-proxy:v3.2.0
+        image: quay.io/ukhomeofficedigital/nginx-proxy:v3.2.9
         imagePullPolicy: Always
         ports:
         - containerPort: 10443
-        - containerPort: 10080
         env:
         - name: PROXY_SERVICE_HOST
           value: 127.0.0.1

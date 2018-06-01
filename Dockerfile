@@ -10,7 +10,7 @@ RUN apt-get update && \
 
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
-USER jenkins
+USER 1000
 
 RUN curl -sSL https://get.docker.com/ | sh
 

@@ -13,36 +13,25 @@ failed() { log "[failed] $@"; exit 1; }
 info "kube api url: ${KUBE_SERVER}"
 info "namespace: ${KUBE_NAMESPACE}"
 
-if [[ "${DRONE_DEPLOY_TO}" == "acp-ci" ]]; then
-  info "kicking off the ci build"
-  if ! scripts/validate.sh; then
-    failed "jenkins ci validation"
-    exit 1
-  fi
-  exit 0
-else
+info "downloading ca for kube api"
+if ! curl --silent --fail --retry 5 \
+    https://raw.githubusercontent.com/UKHomeOffice/acp-ca/master/acp-ci.crt -o /tmp/ca.crt; then
+  failed "downloading ca for kube api"
+  exit 1
+fi
 
-  info "deploying to environment"
-  kd --insecure-skip-tls-verify \
-     --check-interval=5s \
-     --timeout=5m \
-     --namespace=${KUBE_NAMESPACE} \
-     -f kube/pvc.yaml \
-     -f kube/ingress.yaml \
-     -f kube/service.yaml \
-     -f kube/networkpolicy.yaml \
-     -f kube/deployment.yaml
-  if [[ $? -ne 0 ]]; then
-    failed "rollout of deployment"
-    exit 1
-  fi
+KD_OPTS="--certificate-authority=/tmp/ca.crt --check-interval=5s --timeout=5m --namespace=${KUBE_NAMESPACE}"
 
-  info "checking the health endpoint for jenkins"
-  if ! curl --silent --fail --retry 20 --retry-delay 20 --insecure \
-      https://${DNS}}/; then
-    failed "verification of health via endpoint"
-    exit 1
-  fi
+info "deploying to environment"
+kd ${KD_OPTS} \
+   -f kube/pvc.yaml \
+   -f kube/ingress.yaml \
+   -f kube/service.yaml \
+   -f kube/networkpolicy.yaml \
+   -f kube/deployment.yaml
+if [[ $? -ne 0 ]]; then
+  failed "rollout of deployment"
+  exit 1
 fi
 
 exit $?
