@@ -14,6 +14,7 @@ To run jenkins:
 1. `cp -pr {kube,scripts,.drone.yml.example} ../kube-<your project>-jenkins/.`
 1. `cd ../kube-<your project>-jenkins`
 1. `mv .drone.yml.example .drone.yml`
-1. Update the contents of scripts/env.sh - remove acp-ci, and replace 'project' with the name of your project.
+1. Update the contents of scripts/env.sh - replace 'acp' with the name of your project.
+1. Replace latest in JENKINS_VERSION variable with a tagged version from here: https://github.com/UKHomeOffice/docker-jenkins/releases
 1. Push
 1. Deploy
