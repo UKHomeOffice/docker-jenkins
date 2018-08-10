@@ -5,16 +5,13 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y sudo && \
     rm -rf /var/lib/apt/lists/*
-
-RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
-
-USER 1000
 
 RUN curl -sSL https://get.docker.com/ | sh
 
-RUN sudo usermod -aG docker jenkins
+RUN usermod -aG docker jenkins
+
+USER 1000
 
 # Install plugins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
