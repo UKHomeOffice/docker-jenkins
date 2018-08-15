@@ -35,3 +35,13 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/jenkins:$${DRONE_TAG}
     when:
       event: tag
+
+  deploy_ci:
+    image: quay.io/ukhomeofficedigital/kd:v0.9.0
+    secrets: [kube_token_acp_ci, kube_server_acp_ci]
+    commands:
+    - apk update
+    - apk add curl
+    - scripts/deploy.sh
+    when:
+      event: deployment

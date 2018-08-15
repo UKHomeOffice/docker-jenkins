@@ -5,6 +5,7 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y && \
+    apt-get install vim -y && \
     rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://get.docker.com/ | sh
