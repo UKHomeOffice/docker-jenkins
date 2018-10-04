@@ -18,3 +18,17 @@ To run jenkins:
 1. Replace latest in JENKINS_VERSION variable with a tagged version from here: https://github.com/UKHomeOffice/docker-jenkins/releases
 1. Push
 1. Deploy
+
+
+
+### Maintainers
+
+To get a list of installed plugins, go to the jenkins script console and run:
+
+```
+Jenkins.instance.pluginManager.plugins.each{
+  plugin ->
+  println ("${plugin.getShortName()}:${plugin.getVersion()}")
+}
+
+```
