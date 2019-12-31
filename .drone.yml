@@ -16,14 +16,6 @@ pipeline:
       - docker tag jenkins quay.io/ukhomeofficedigital/jenkins:latest
       - docker push quay.io/ukhomeofficedigital/jenkins:latest
 
-  deploy_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.9.0
-    secrets: [kube_token_acp_ci, kube_server_acp_ci]
-    commands:
-    - apk update
-    - apk add curl
-    - scripts/deploy.sh
-
   tag_to_quay:
     image: docker:18.05.0
     secrets: [docker_token]
